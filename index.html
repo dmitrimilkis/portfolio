@@ -1,444 +1,223 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dmitri Milkis</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #ffffff;
-      --fg: #1A1A1A;
-      --fg-light: #999;
-      --sans: 'DM Sans', sans-serif;
-      --radius: 10px;
-      --col-gap: 14px;
-      --top: 48px;
-      --sidebar-w: 160px;
-      --sidebar-gap: 50px;
-    }
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: var(--sans);
-      -webkit-font-smoothing: antialiased;
-    }
-
-    ::selection {
-      background: #1A1A1A;
-      color: #fff;
-    }
-
-    /*
-      LAYOUT MATH
-      ───────────
-      Grid left from viewport = sidebar-w + sidebar-gap + page-left-pad
-      We need: gridLeft + colWidth/2 = 50vw
-      Where:   gridWidth = 100vw − gridLeft
-               colWidth  = (gridWidth − 2·col-gap) / 3
-
-      Solving:  gridLeft = 40vw + 2·col-gap / 5 = 40vw + 5.6px
-
-      So:       page-left-pad = gridLeft − sidebar-w − sidebar-gap
-                              = 40vw + 5.6px − 160px − 50px
-                              = calc(40vw − 204.4px)
-    */
-
-    .page {
-      display: flex;
-      align-items: flex-start;
-      padding-top: var(--top);
-      padding-bottom: 80px;
-      padding-left: calc(40vw - 204.4px);
-      padding-right: 0;
+      background: #fff;
+      font-family: 'DM Sans', sans-serif;
       min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 40px;
     }
 
-    /* ── SIDEBAR — sticks to top on scroll ── */
+    .wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 48px;
+      width: 100%;
+      max-width: 1100px;
+    }
+
     .sidebar {
-      position: sticky;
-      top: var(--top);
-      width: var(--sidebar-w);
-      flex-shrink: 0;
-      margin-right: var(--sidebar-gap);
-    }
-
-    .logo {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      line-height: 1.3;
-      cursor: default;
-    }
-
-    .nav-links {
-      list-style: none;
+      flex: 0 0 180px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-top: 80px;
+      gap: 20px;
+      padding-top: 4px;
     }
 
-    .nav-links a {
-      font-size: 11px;
-      font-weight: 400;
-      color: var(--fg-light);
-      text-decoration: none;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      transition: color 0.3s;
-    }
-
-    .nav-links a:hover { color: var(--fg); }
-
-    /* ── FOOTER ── */
-    .footer {
-      position: fixed;
-      bottom: 24px;
-      left: calc(40vw - 204.4px);
-      font-size: 10px;
-      color: var(--fg-light);
+    .site-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.45rem;
       letter-spacing: 0.04em;
-      z-index: 10;
+      line-height: 1.15;
+      text-transform: uppercase;
+      color: #111;
     }
 
-    /* ── 3-COLUMN MASONRY GRID ── */
+    .sidebar-links {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sidebar-links a {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #888;
+      text-decoration: none;
+      transition: color 0.2s;
+      width: fit-content;
+    }
+
+    .sidebar-links a:hover { color: #111; }
+
     .grid {
       flex: 1;
-      min-width: 0;
-      columns: 3;
-      column-gap: var(--col-gap);
+      columns: 3 160px;
+      column-gap: 12px;
     }
 
-    .masonry-item {
+    .photo-item {
       break-inside: avoid;
-      margin-bottom: var(--col-gap);
+      margin-bottom: 12px;
       cursor: pointer;
-      overflow: hidden;
-      border-radius: var(--radius);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-      -webkit-user-select: none;
-      user-select: none;
     }
 
-    .masonry-item.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .masonry-item img {
-      display: block;
+    .photo-item img {
       width: 100%;
       height: auto;
-      object-fit: cover;
-      -webkit-user-drag: none;
-      user-drag: none;
-      pointer-events: none;
-      transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+      display: block;
+      border-radius: 6px;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    .masonry-item:hover img {
-      transform: scale(1.03);
+    .photo-item:hover img { transform: scale(1.02); }
+
+    .photo-number {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 300;
+      color: #aaa;
+      margin-top: 5px;
+      padding-left: 2px;
     }
 
-    .masonry-item::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-    }
-
-    /* ── LIGHTBOX ── */
     .lightbox {
+      display: none;
       position: fixed;
       inset: 0;
-      z-index: 1000;
-      display: flex;
+      background: rgba(255,255,255,0.97);
+      z-index: 100;
       align-items: center;
       justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+      cursor: zoom-out;
     }
 
-    .lightbox.active {
-      opacity: 1;
-      pointer-events: all;
-    }
+    .lightbox.open { display: flex; }
 
-    .lightbox-fog {
-      position: absolute;
-      inset: 0;
-      background: rgba(255, 255, 255, 0.95);
-      cursor: pointer;
-    }
-
-    .lightbox-img-wrapper {
-      position: relative;
-      z-index: 1;
+    .lightbox img {
       max-width: 85vw;
-      max-height: 90vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .lightbox-img-wrapper img {
-      max-width: 100%;
-      max-height: 90vh;
+      max-height: 88vh;
       object-fit: contain;
-      opacity: 0;
-      transform: scale(0.97);
-      transition: opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) 0.1s, transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) 0.1s;
-      -webkit-user-drag: none;
-      user-drag: none;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-
-    .lightbox.active .lightbox-img-wrapper img {
-      opacity: 1;
-      transform: scale(1);
+      border-radius: 6px;
     }
 
     .lightbox-close {
-      position: absolute;
-      top: 28px;
+      position: fixed;
+      top: 24px;
       right: 32px;
-      z-index: 2;
-      width: 32px;
-      height: 32px;
+      color: #bbb;
+      font-size: 1.6rem;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1;
+      transition: color 0.2s;
     }
 
-    .lightbox-close::before,
-    .lightbox-close::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 1px;
-      background: var(--fg);
-    }
+    .lightbox-close:hover { color: #111; }
 
-    .lightbox-close::before { transform: rotate(45deg); }
-    .lightbox-close::after { transform: rotate(-45deg); }
+    @media (max-width: 640px) {
+      body { padding: 28px 20px 48px; align-items: flex-start; }
 
-    .lightbox-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 2;
-      width: 44px;
-      height: 44px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0.35;
-      transition: opacity 0.3s;
-    }
-
-    .lightbox-nav:hover { opacity: 1; }
-    .lightbox-nav.prev { left: 24px; }
-    .lightbox-nav.next { right: 24px; }
-
-    .lightbox-nav svg {
-      width: 20px;
-      height: 20px;
-      stroke: var(--fg);
-      stroke-width: 1.5;
-      fill: none;
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      .page {
-        flex-direction: column;
-        padding: 24px 20px 60px;
-      }
+      .wrapper { flex-direction: column; gap: 24px; }
 
       .sidebar {
-        position: relative;
-        top: 0;
+        flex: none;
         width: 100%;
-        display: flex;
+        flex-direction: row;
         align-items: baseline;
         justify-content: space-between;
-        margin-right: 0;
-        margin-bottom: 16px;
+        gap: 0;
       }
 
-      .nav-links {
-        flex-direction: row;
-        gap: 16px;
-        align-items: baseline;
-        margin-top: 0;
-      }
+      .site-name { font-size: 1.2rem; }
 
-      .grid { columns: 2; }
+      .sidebar-links { flex-direction: row; gap: 20px; }
 
-      .footer {
-        position: relative;
-        bottom: auto;
-        left: auto;
-        padding: 24px 20px 0;
-      }
-
-      .lightbox-nav.prev { left: 8px; }
-      .lightbox-nav.next { right: 8px; }
+      .grid { columns: 1; width: 100%; }
     }
   </style>
+
 </head>
 <body>
 
-  <div class="page">
-    <div class="sidebar">
-      <div class="logo">Dmitri Milkis</div>
-      <ul class="nav-links">
-        <li><a href="#" id="contact-link">Contact</a></li>
-        <li><a href="https://instagram.com/dmitrimilkis" target="_blank">Instagram</a></li>
-      </ul>
-    </div>
+  <div class="wrapper">
 
-    <div class="grid" id="masonry">
-      <div class="masonry-item"><img src="images/photo-1.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-2.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-3.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-4.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-5.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-6.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-7.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-8.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-9.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-10.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-11.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-12.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-13.jpeg" alt=""></div>
-      <div class="masonry-item"><img src="images/photo-14.jpeg" alt=""></div>
-    </div>
+```
+<aside class="sidebar">
+  <div class="site-name">Dmitri<br>Milkis</div>
+  <nav class="sidebar-links">
+    <a href="mailto:hello@dmitrimilkis.com">Contact</a>
+    <a href="https://instagram.com/dmitrimilkis" target="_blank" rel="noopener">Instagram</a>
+  </nav>
+</aside>
+
+<main class="grid">
+  <div class="photo-item"><img src="https://picsum.photos/seed/a1/600/800" alt=""><div class="photo-number">1.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/b2/600/450" alt=""><div class="photo-number">2.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/c3/600/700" alt=""><div class="photo-number">3.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/d4/600/400" alt=""><div class="photo-number">4.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/e5/600/900" alt=""><div class="photo-number">5.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/f6/600/500" alt=""><div class="photo-number">6.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/g7/600/750" alt=""><div class="photo-number">7.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/h8/600/420" alt=""><div class="photo-number">8.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/i9/600/680" alt=""><div class="photo-number">9.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/j10/600/530" alt=""><div class="photo-number">10.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/k11/600/810" alt=""><div class="photo-number">11.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/l12/600/460" alt=""><div class="photo-number">12.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/m13/600/600" alt=""><div class="photo-number">13.</div></div>
+  <div class="photo-item"><img src="https://picsum.photos/seed/n14/600/720" alt=""><div class="photo-number">14.</div></div>
+</main>
+```
+
   </div>
 
-  <div class="footer">&copy; 2025</div>
-
-  <!-- LIGHTBOX -->
   <div class="lightbox" id="lightbox">
-    <div class="lightbox-fog" id="lightbox-fog"></div>
-    <div class="lightbox-close" id="lightbox-close"></div>
-    <div class="lightbox-nav prev" id="lb-prev">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </div>
-    <div class="lightbox-nav next" id="lb-next">
-      <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
-    </div>
-    <div class="lightbox-img-wrapper">
-      <img id="lightbox-img" src="" alt="">
-    </div>
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">×</button>
+    <img src="" alt="" id="lightbox-img">
   </div>
 
   <script>
-    // ── Contact link ──
-    (function() {
-      var u = 'me'; var d = 'dmitrimilkis.com';
-      var el = document.getElementById('contact-link');
-      el.addEventListener('click', function(e) {
-        e.preventDefault();
-        window.location.href = 'mail' + 'to:' + u + '@' + d;
-      });
-    })();
-
-    // ── Image protection ──
-    document.addEventListener('contextmenu', e => {
-      if (e.target.closest('.masonry-item') || e.target.closest('.lightbox-img-wrapper')) {
-        e.preventDefault();
-      }
-    });
-
-    document.addEventListener('dragstart', e => {
-      if (e.target.tagName === 'IMG') e.preventDefault();
-    });
-
-    // ── Staggered reveal on load ──
-    (function() {
-      const items = [...document.querySelectorAll('.masonry-item')];
-      let loadedCount = 0;
-
-      items.forEach(item => {
-        const img = item.querySelector('img');
-        if (!img) return;
-
-        function onReady() {
-          loadedCount++;
-          setTimeout(() => item.classList.add('visible'), loadedCount * 80);
-        }
-
-        if (img.complete && img.naturalHeight) {
-          onReady();
-        } else {
-          img.addEventListener('load', onReady, { once: true });
-          img.addEventListener('error', onReady, { once: true });
-        }
-      });
-    })();
-
-    // ── Lightbox ──
     const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const items = [...document.querySelectorAll('.masonry-item')];
-    let currentIndex = 0;
+    const lbImg    = document.getElementById('lightbox-img');
+    const lbClose  = document.getElementById('lightbox-close');
 
-    function getSrc(item) {
-      const img = item.querySelector('img');
-      return img ? img.src : '';
-    }
-
-    function openLB(i) {
-      currentIndex = i;
-      lightboxImg.src = getSrc(items[i]);
-      lightbox.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeLB() {
-      lightbox.classList.remove('active');
-      document.body.style.overflow = '';
-      setTimeout(() => lightboxImg.src = '', 400);
-    }
-
-    function navLB(dir) {
-      lightboxImg.style.transition = 'none';
-      lightboxImg.style.opacity = '0';
-      lightboxImg.style.transform = 'scale(0.96)';
-      currentIndex = (currentIndex + dir + items.length) % items.length;
-      lightboxImg.src = getSrc(items[currentIndex]);
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        lightboxImg.style.transition = '';
-        lightboxImg.style.opacity = '';
-        lightboxImg.style.transform = '';
-      }));
-    }
-
-    items.forEach((item, i) => item.addEventListener('click', () => openLB(i)));
-    document.getElementById('lightbox-fog').addEventListener('click', closeLB);
-    document.getElementById('lightbox-close').addEventListener('click', closeLB);
-    document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); navLB(-1); });
-    document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); navLB(1); });
-
-    document.addEventListener('keydown', e => {
-      if (!lightbox.classList.contains('active')) return;
-      if (e.key === 'Escape') closeLB();
-      if (e.key === 'ArrowLeft') navLB(-1);
-      if (e.key === 'ArrowRight') navLB(1);
+    document.querySelectorAll('.photo-item img').forEach(img => {
+      img.addEventListener('click', () => {
+        lbImg.src = img.src;
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
     });
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+      lbImg.src = '';
+    }
+
+    lbClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
   </script>
 
 </body>
